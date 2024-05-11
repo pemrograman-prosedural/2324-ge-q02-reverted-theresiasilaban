@@ -13,8 +13,8 @@ struct student_t create_student(char *_id, char *_name, char *_year, enum gender
         strcpy(students.name, _name);
         strcpy(students.year, _year);
         students.gender = _gender;
-        students.dorm = NULL;
-        return students; 
+
+        return students;
 }
 
 void print_stu(struct student_t *_student, int size){
@@ -29,32 +29,32 @@ void print_stu(struct student_t *_student, int size){
 }
 
 void student_print_all_detail(struct student_t *_student, int size){
-    for(int a=0; a<size; a++){
-        if(_student[a].dorm->name == NULL){
-            if(_student[a].gender == GENDER_MALE){
-                printf("%s|%s|%s|male|unassigned\n", _student[a].id, _student[a].name, _student[a].year);
-            }
-            else{
+    int a = 0;
+    for(a=0; a<size; a++){
+       if(_student[a].dorm == NULL){
+           if(_student[a].gender == GENDER_MALE){
+             printf("%s|%s|%s|male|unassigned\n", _student[a].id, _student[a].name, _student[a].year);
+           }
+           else if(_student[a].gender == GENDER_FEMALE){
                 printf("%s|%s|%s|female|unassigned\n", _student[a].id, _student[a].name, _student[a].year);
-            }
+           }
         }
         else{
             if(_student[a].gender == GENDER_MALE){
-            printf("%s|%s|%s|male|%s\n", _student[a].id, _student[a].name, _student[a].year, _student[a].dorm->name);
+                printf("%s|%s|%s|male|%s\n", _student[a].id, _student[a].name, _student[a].year, _student[a].dorm->name);
             }
-            else{
-            printf("%s|%s|%s|female|%s\n", _student[a].id, _student[a].name, _student[a].year, _student[a].dorm->name);
-
+            else if(_student[a].gender == GENDER_FEMALE){
+                printf("%s|%s|%s|female|%s\n", _student[a].id, _student[a].name, _student[a].year, _student[a].dorm->name);
+            }
             }
         }
-    }
 }
 
-void assign_student(struct student_t *_student, struct dorm_t *_dorm , int in, int hn){
-    if(_dorm->residents_num < _dorm->capacity){
-        if(_student->gender == _dorm->gender){
-           _student->dorm->name = _dorm->name; 
-        _dorm->residents_num++;
-        }
+void assign_student(struct student_t *_student, int size, struct dorm_t *_dorm, int size_dorm){
+   if(_dorm->residents_num < _dorm->capacity){
+    if(_student->gender == _dorm->gender){
+     _student->dorm = _dorm;
+        _dorm->residents_num++;   
     }
+   }
 }

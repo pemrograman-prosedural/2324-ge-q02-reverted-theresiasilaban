@@ -1,20 +1,18 @@
 // 12S23026 - Arif M. Doloksaribu
 // 12S23051 - Theresia Silaban
 
+
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "./libs/dorm.h"
 #include "./libs/student.h"
-
+#include <stdlib.h>
+#include <string.h>
 
 int main(int _argc, char **_argv)
 {
-    struct dorm_t *dorm = malloc(100 * sizeof(struct dorm_t));
-    struct student_t *student = malloc(100 * sizeof(struct student_t));
+    struct dorm_t *dorm = malloc(4 * sizeof(struct dorm_t));
+    struct student_t *student = malloc(12 * sizeof(struct student_t));
     int i = 0;
-    int in = 0;
-    int hn = 0;
     char masukan[100], *argument, *token;
     int h = 0;
 
@@ -31,6 +29,12 @@ int main(int _argc, char **_argv)
             print_stu(student, i);
             continue;
         }
+        else if(strcmp(masukan,"student-print-all-detail")==0){
+        student_print_all_detail(student, i);
+        }
+        else if(strcmp(masukan,"dorm-print-all-detail")==0){
+        dorm_print_all_detail(dorm, h);
+        }
         argument = strtok(masukan, "#");
         if (strcmp(argument, "dorm-add") == 0) {
             token = strtok(NULL, "#");
@@ -46,7 +50,6 @@ int main(int _argc, char **_argv)
             
             dorm[h] = create_dorm(dorm[h].name, dorm[h].capacity, dorm[h].gender);
 
-            h++;
         }
          else if (strcmp(argument, "student-add") == 0){
             token = strtok(NULL, "#");
@@ -63,36 +66,36 @@ int main(int _argc, char **_argv)
             }
              student[i] = create_student(student[i].id, student[i].name, student[i].year, student[i].gender);
 
-            i++;
     }
-    else if(strcmp(argument, "assign-student")==0){
-        token = strtok(NULL,"#");
-        strcpy(student[in].id, token);
+        else if(strcmp(argument,"assign-student")==0){
+        int x, y;
+    
+        token = strtok(NULL, "#");
+        char student_id[20];
+        strcpy(student_id, token);
 
-        token = strtok(NULL,"#");
-        strcpy(dorm[hn].name, token);
-        if(student[in].id == student[i].id){
-                i = in;
-                in++;
+        for(x = 0; x < i; x++){
+        if(strcmp(student[x].id, student_id) == 0){
+            y = x;
+            break;
         }
-           if(dorm[hn].name == dorm[h].name){
-            h = hn;
-            hn++;
-            }
-        assign_student(student, dorm, in, hn);
     }
 
-        else if(strcmp(argument,"student-print-all-detail")==0){
-            void(*pf)(struct student_t *_student, int size);
-            pf = student_print_all_detail;
-            pf(student, i);
+   
+        token = strtok(NULL, "#");
+        char dorm_name[20];
+        strcpy(dorm_name, token);
+
+   
+        for(x = 0; x < h; x++){
+        if(strcmp(dorm[x].name, dorm_name) == 0){
+            break;
         }
-        else if(strcmp(argument,"dorm-print-all-detail")==0){
-            void(*pf)(struct dorm_t *_dorm, int size);
-            pf = dorm_print_all_detail;
-            pf(dorm, h);
-        }
-    }       
+    }
+
+        assign_student(&student[y], y, &dorm[x], x);
+    }
+
+    }
     return 0;
 }
-  
