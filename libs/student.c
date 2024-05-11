@@ -57,4 +57,4 @@ void assign_student(struct student_t *_student, int size, struct dorm_t *_dorm, 
         _dorm->residents_num++;   
     }
    }
-}
+} 

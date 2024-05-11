@@ -25,7 +25,7 @@ void print_dorms(struct dorm_t *_dorm, int size){
         else if(_dorm[a].gender == GENDER_FEMALE){
             printf("%s|%d|female\n", _dorm[a].name, _dorm[a].capacity);
         }         
-    }
+    } 
 }
 
 void dorm_print_all_detail(struct dorm_t *_dorm, int size){

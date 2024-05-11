@@ -1,13 +1,12 @@
 // 12S23026 - Arif M. Doloksaribu
 // 12S23051 - Theresia Silaban
 
-
 #include <stdio.h>
 #include "./libs/dorm.h"
 #include "./libs/student.h"
 #include <stdlib.h>
 #include <string.h>
-
+ 
 int main(int _argc, char **_argv)
 {
     struct dorm_t *dorm = malloc(4 * sizeof(struct dorm_t));
