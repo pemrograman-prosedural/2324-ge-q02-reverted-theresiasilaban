@@ -2,99 +2,114 @@
 // 12S23051 - Theresia Silaban
 
 #include <stdio.h>
-#include "./libs/dorm.h"
-#include "./libs/student.h"
 #include <stdlib.h>
 #include <string.h>
- 
-int main(int _argc, char **_argv)
-{
-    struct dorm_t *dorm = malloc(4 * sizeof(struct dorm_t));
-    struct student_t *student = malloc(12 * sizeof(struct student_t));
-    int i = 0;
-    char masukan[100], *argument, *token;
-    int h = 0;
 
-    while (1) {
-        fgets(masukan, 100, stdin);
-        masukan[strcspn(masukan, "\n")] = 0;
-        if (strcmp(masukan, "---") == 0) {
+typedef struct {
+    char id[20];
+    char name[100];
+    int year;
+    char gender[10];
+    char dorm[100];
+} Student;
+
+typedef struct {
+    char name[100];
+    int capacity;
+    char gender[10];
+    int occupied;
+} Dorm;
+
+void emptyDorm(Dorm dorm[], int n, char dormName[]) {
+    for (int i = 0; i < n; i++) {
+        if (strcmp(dorm[i].name, dormName) == 0) {
+            dorm[i].occupied = 0;
             break;
-        } else if (strcmp(masukan, "dorm-print-all") == 0) {
-            print_dorms(dorm, h);
-            continue;
         }
-        else if (strcmp(masukan, "student-print-all") == 0) {
-            print_stu(student, i);
-            continue;
-        }
-        else if(strcmp(masukan,"student-print-all-detail")==0){
-        student_print_all_detail(student, i);
-        }
-        else if(strcmp(masukan,"dorm-print-all-detail")==0){
-        dorm_print_all_detail(dorm, h);
-        }
-        argument = strtok(masukan, "#");
-        if (strcmp(argument, "dorm-add") == 0) {
-            token = strtok(NULL, "#");
-            strcpy(dorm[h].name, token);
-            token = strtok(NULL, "#");
-            dorm[h].capacity = atoi(token);
-            token = strtok(NULL, "#");
-            if (strcmp(token, "male") == 0) {
-                dorm[h].gender = GENDER_MALE;
-            } else {
-                dorm[h].gender = GENDER_FEMALE;
+    }
+}
+
+void printStudents(Student students[], int n) {
+    for (int i = 0; i < n; i++) {
+        printf("%s|%s|%d|%s|%s\n", students[i].id, students[i].name, students[i].year, students[i].gender, students[i].dorm);
+    }
+}
+
+void printDorms(Dorm dorm[], int n) {
+    for (int i = 0; i < n; i++) {
+        printf("%s|%d|%s|%d\n", dorm[i].name, dorm[i].capacity, dorm[i].gender, dorm[i].occupied);
+    }
+}
+
+int main() {
+    const int MAX_STUDENTS = 100;
+    const int MAX_DORMS = 100;
+
+    Student students[MAX_STUDENTS];
+    Dorm dorms[MAX_DORMS];
+    int studentCount = 0;
+    int dormCount = 0;
+
+    char input[100];
+    while (fgets(input, sizeof(input), stdin)) {
+        char *command = strtok(input, "#");
+        if (strcmp(command, "student-add") == 0) {
+            char *id = strtok(NULL, "#");
+            char *name = strtok(NULL, "#");
+            char *yearStr = strtok(NULL, "#");
+            int year = atoi(yearStr);
+            char *gender = strtok(NULL, "#");
+
+            strcpy(students[studentCount].id, id);
+            strcpy(students[studentCount].name, name);
+            students[studentCount].year = year;
+            strcpy(students[studentCount].gender, gender);
+            strcpy(students[studentCount].dorm, "unassigned");
+            studentCount++;
+        } else if (strcmp(command, "dorm-add") == 0) {
+            char *name = strtok(NULL, "#");
+            char *capacityStr = strtok(NULL, "#");
+            int capacity = atoi(capacityStr);
+            char *gender = strtok(NULL, "#");
+
+            strcpy(dorms[dormCount].name, name);
+            dorms[dormCount].capacity = capacity;
+            strcpy(dorms[dormCount].gender, gender);
+            dorms[dormCount].occupied = 0;
+            dormCount++;
+        } else if (strcmp(command, "assign-student") == 0) {
+            char *id = strtok(NULL, "#");
+            char *dormName = strtok(NULL, "#");
+
+            for (int i = 0; i < studentCount; i++) {
+                if (strcmp(students[i].id, id) == 0) {
+                    strcpy(students[i].dorm, dormName);
+                    break;
+                }
             }
-            
-            dorm[h] = create_dorm(dorm[h].name, dorm[h].capacity, dorm[h].gender);
 
-        }
-         else if (strcmp(argument, "student-add") == 0){
-            token = strtok(NULL, "#");
-            strcpy(student[i].id, token);
-            token = strtok(NULL, "#");
-            strcpy(student[i].name, token);
-            token = strtok(NULL, "#");
-            strcpy(student[i].year, token);
-            token = strtok(NULL, "#");
-            if (strcmp(token, "male") == 0) {
-                 student[i].gender = GENDER_MALE;
-            } else {
-                student[i].gender = GENDER_FEMALE;
+            for (int i = 0; i < dormCount; i++) {
+                if (strcmp(dorms[i].name, dormName) == 0) {
+                    dorms[i].occupied++;
+                    break;
+                }
             }
-             student[i] = create_student(student[i].id, student[i].name, student[i].year, student[i].gender);
+        } else if (strcmp(command, "dorm-empty") == 0) {
+            char *dormName = strtok(NULL, "#");
 
-    }
-        else if(strcmp(argument,"assign-student")==0){
-        int x, y;
-    
-        token = strtok(NULL, "#");
-        char student_id[20];
-        strcpy(student_id, token);
+            emptyDorm(dorms, dormCount, dormName);
 
-        for(x = 0; x < i; x++){
-        if(strcmp(student[x].id, student_id) == 0){
-            y = x;
-            break;
+            for (int i = 0; i < studentCount; i++) {
+                if (strcmp(students[i].dorm, dormName) == 0) {
+                    strcpy(students[i].dorm, "unassigned");
+                }
+            }
+        } else if (strcmp(command, "student-print-all-detail\n") == 0) {
+            printStudents(students, studentCount);
+        } else if (strcmp(command, "dorm-print-all-detail\n") == 0) {
+            printDorms(dorms, dormCount);
         }
     }
 
-   
-        token = strtok(NULL, "#");
-        char dorm_name[20];
-        strcpy(dorm_name, token);
-
-   
-        for(x = 0; x < h; x++){
-        if(strcmp(dorm[x].name, dorm_name) == 0){
-            break;
-        }
-    }
-
-        assign_student(&student[y], y, &dorm[x], x);
-    }
-
-    }
     return 0;
 }
